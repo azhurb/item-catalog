@@ -21,7 +21,75 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-#TODO: routes
+# Create anti-forgery state token
+@app.route('/login')
+def showLogin():
+    pass
+
+@app.route('/fbconnect', methods=['POST'])
+def fbconnect():
+    pass
+
+@app.route('/fbdisconnect')
+def fbdisconnect():
+    pass
+
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+    pass
+
+@app.route('/gdisconnect')
+def gdisconnect():
+    pass
+
+# Show all categories
+@app.route('/')
+@app.route('/catalog/')
+def showCategories():
+    pass
+
+# Create a new category
+@app.route('/catalog/new/', methods=['GET', 'POST'])
+def newCategory():
+    pass
+
+# Edit a category
+@app.route('/catalog/<int:category_id>/edit/', methods=['GET', 'POST'])
+def editCategory(category_id):
+    pass
+
+# Delete a category
+@app.route('/catalog/<int:category_id>/delete/', methods=['GET', 'POST'])
+def deleteCategory(category_id):
+    pass
+
+# Show a category
+@app.route('/catalog/<int:category_id>/')
+@app.route('/catalog/<int:category_id>/items/')
+def showCategory(category_id):
+    pass
+
+# Create a new category item
+@app.route('/catalog/<int:category_id>/items/new/', methods=['GET', 'POST'])
+def newCategoryItem(category_id):
+    pass
+
+# Edit a category item
+@app.route('/catalog/<int:category_id>/items/<int:item_id>/edit', methods=['GET', 'POST'])
+def editCategoryItem(category_id, item_id):
+    pass
+
+# Delete a category item
+@app.route('//catalog/<int:category_id>/items/<int:item_id>/delete', methods=['GET', 'POST'])
+def deleteCategoryItem(category_id, item_id):
+    pass
+
+# Disconnect based on provider
+@app.route('/disconnect')
+def disconnect():
+    pass
+
+# TODO: Add API routes
 
 if __name__ == '__main__':
     app.debug = True
