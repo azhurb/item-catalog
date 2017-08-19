@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Restaurant, MenuItem, User
+from models import Base, Restaurant, MenuItem, User
 from flask import session as login_session
 import random
 import string
@@ -89,7 +89,16 @@ def deleteCategoryItem(category_id, item_id):
 def disconnect():
     pass
 
-# TODO: Add API routes
+
+# Helpers
+
+def request_wants_json():
+    best = request.accept_mimetypes \
+        .best_match(['application/json', 'text/html'])
+    return best == 'application/json' and \
+        request.accept_mimetypes[best] > \
+        request.accept_mimetypes['text/html']
+
 
 if __name__ == '__main__':
     app.debug = True
