@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Item Catalog</h1>
+        <h1><a href="{{ url_for('showCategories') }}">Item Catalog</a></h1>
         <div class=metanav>
         {% if 'username' not in session %}
         <a href="{{ url_for('showLogin') }}">log in</a>
