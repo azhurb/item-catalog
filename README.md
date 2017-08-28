@@ -13,7 +13,7 @@ Application is compatible with Python 2.7 and higher.
 ```
 pip install flask sqlalchemy oauth2client
 ```
-2. Download and run the
+2. Download the application files
 ```
 git clone https://github.com/azhurb/item-catalog.git
 cd ./item-catalog
