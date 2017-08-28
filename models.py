@@ -32,7 +32,7 @@ class Category(Base):
         return {
             'name': self.name,
             'id': self.id,
-            'Item' : [x.serialize for x in self.items]
+            'Item': [x.serialize for x in self.items]
         }
 
 
