@@ -1,40 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="row top-menu">
-        <div class="col-md-10"></div>
-        <div class="col-md-2 text-right">
-                    </div>
-    </div>
-    <div class="row divider blue">
-        <div class="col-md-12"></div>
-    </div>
-    <div class="row banner main">
-        <div class="col-md-1"></div>
-        <div class="col-md-11 padding-none">
+
+    <div class="row">
+        <div class="col-md-4">
             <h1>Categories</h1>
-        </div>
-    </div>
-    
-    <div class="row padding-top padding-bottom">
-        <div class="col-md-1"></div>
-        <div class="col-md-10 padding-none">
+
+            {% for category in categories %}
+                <h3><a href = "{{url_for('showCategory', category_id = category.id)}}">{{category.name}}</a></h3>
+            {% endfor %}
+
+            {% if 'username' in session %}
             <a href="{{url_for('newCategory')}}">
                 <button class="btn btn-default" id="new-restaurant">
-                    <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Add Category
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Category
                 </button>
             </a>
+            {% endif %}
         </div>
-        <div class="col-md-1"></div>
+
+        <div class="col-md-4">
+            <h1>Latest Items</h1>
+            {% for item in latest_items %}
+                <h3><a href = "{{url_for('showCategoryItem', category_id = item.category.id, item_id=item.id)}}">{{item.name}}</a> <em>({{item.category.name}})</em></h3>
+            {% endfor %}
+        </div>
     </div>
-    {% for category in categories %}
-        <a href = "{{url_for('showCategory', category_id = category.id)}}">
-            <div class="row">
-                <div class="col-md-1"></div>
-                    <div class="col-md-10 category-list">
-                        <h3>{{category.name}}</h3>
-                    </div>
-                <div class="col-md-1"></div>
-            </div>
-        </a>
-    {% endfor %}
+
 {% endblock %}

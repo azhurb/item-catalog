@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
-from sqlalchemy import create_engine, asc
+from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, CategoryItem, User
 from flask import session as login_session
@@ -169,9 +169,13 @@ def disconnect():
 @app.route('/')
 @app.route('/catalog/')
 def showCategories():
-    print(login_session)
     categories = session.query(Category).order_by(asc(Category.name))
-    return render_template('categories.html', categories=categories)
+    if request_wants_json():
+        return jsonify(Category=[x.serialize for x in categories])
+    else:
+        latest_items = session.query(CategoryItem).order_by(desc(CategoryItem.id)).limit(10)
+        return render_template('categories.html', categories=categories, latest_items=latest_items)
+
 
 
 # Create a new category
@@ -234,7 +238,10 @@ def showCategory(category_id):
     creator = getUserInfo(category.user_id)
     items = session.query(CategoryItem).filter_by(
         category_id=category_id).all()
-    return render_template('category.html', items=items, category=category, creator=creator)
+    if request_wants_json():
+        return jsonify(Item=[x.serialize for x in items])
+    else:
+        return render_template('category.html', items=items, category=category, creator=creator)
 
 # Create a new category item
 @app.route('/catalog/<int:category_id>/items/new/', methods=['GET', 'POST'])
@@ -253,6 +260,16 @@ def newCategoryItem(category_id):
         return redirect(url_for('showCategory', category_id=category_id))
     else:
         return render_template('newcategoryitem.html', category_id=category_id)
+
+# Show a category item
+@app.route('/catalog/<int:category_id>/items/<int:item_id>/', methods=['GET'])
+def showCategoryItem(category_id, item_id):
+    item = session.query(CategoryItem).filter_by(id=item_id).one()
+    category = session.query(Category).filter_by(id=category_id).one()
+    if request_wants_json():
+        return jsonify(Item=item.serialize)
+    else:
+        return render_template('viewCategoryItem.html', category=category, item=item)
 
 
 # Edit a category item
@@ -326,6 +343,6 @@ def request_wants_json():
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super secret key4'
+    app.secret_key = 'super secret key'
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+
+	<div class="row banner item">
+		<div class="col-md-7 padding-none">
+			<h1>{{ item.name }}</h1>
+			<em>{{category.name}}</em>
+			<div class="row"><div class="col-md-7 top7"></div></div>
+			<p>{{ item.description }}</p>
+			{% if 'username' in session %}
+			<a href='{{url_for('editCategoryItem', category_id = category.id, item_id=item.id ) }}'>Edit</a> | 
+			<a href='{{url_for('deleteCategoryItem', category_id = category.id, item_id=item.id ) }}'>Delete</a>
+			{% endif %}
+		</div>
+	</div>
+
+{% endblock %}
