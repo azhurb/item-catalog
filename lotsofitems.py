@@ -116,4 +116,4 @@ categoryItem3 = CategoryItem(
 session.add(categoryItem3)
 session.commit()
 
-print "added category items!"
+print("added category items!")
