@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, jsonify
-from flask import url_for, flash
+from flask import url_for, flash, abort
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, CategoryItem, User
@@ -38,7 +38,21 @@ def login_required(func):
     @wraps(func)
     def wrapper(**kwargs):
         if 'username' not in login_session:
-            return redirect('/login')
+            return redirect(url_for('showLogin'))
+        else:
+            func(**kwargs)
+    return wrapper
+
+
+def access_granted(func):
+    """
+    Check if the user has permission for the operation.
+    """
+    @wraps(func)
+    def wrapper(**kwargs):
+        if item.user_id != login_session['user_id']:
+            flash("You are not authorized to change this entity.")
+            return redirect(url_for('showCategories'))
         else:
             func(**kwargs)
     return wrapper
@@ -236,7 +250,11 @@ def editCategory(category_id):
     Edit a category.
     """
     editedCategory = session.query(
-        Category).filter_by(id=category_id).one()
+        Category).filter_by(id=category_id).one_or_none()
+
+    if editedCategory is None:
+        return abort(404)
+
     if editedCategory.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized "
         "to edit this category. Please create your own category in order to "
@@ -257,7 +275,11 @@ def deleteCategory(category_id):
     Delete a category.
     """
     categoryToDelete = session.query(
-        Category).filter_by(id=category_id).one()
+        Category).filter_by(id=category_id).one_or_none()
+
+    if categoryToDelete is None:
+        return abort(404)
+
     if categoryToDelete.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized "
         "to delete this category. Please create your own category in order "
@@ -278,7 +300,12 @@ def showCategory(category_id):
     """
     Show a category.
     """
-    category = session.query(Category).filter_by(id=category_id).one()
+    category = session.query(
+        Category).filter_by(id=category_id).one_or_none()
+
+    if category is None:
+        return abort(404)
+
     creator = getUserInfo(category.user_id)
     items = session.query(CategoryItem).filter_by(
         category_id=category_id).all()
@@ -295,7 +322,12 @@ def newCategoryItem(category_id):
     """
     Create a new category item.
     """
-    category = session.query(Category).filter_by(id=category_id).one()
+    category = session.query(
+        Category).filter_by(id=category_id).one_or_none()
+
+    if category is None:
+        return abort(404)
+
     if login_session['user_id'] != category.user_id:
         return "<script>function myFunction() {alert('You are not authorized "
         "to add menu items to this category. Please create your own category "
@@ -318,8 +350,12 @@ def showCategoryItem(category_id, item_id):
     """
     Show a category item.
     """
-    item = session.query(CategoryItem).filter_by(id=item_id).one()
-    category = session.query(Category).filter_by(id=category_id).one()
+    item = session.query(CategoryItem).filter_by(id=item_id).one_or_none()
+    category = session.query(Category).filter_by(id=category_id).one_or_none()
+
+    if category is None or item is None:
+        return abort(404)
+
     if request_wants_json():
         return jsonify(Item=item.serialize)
     else:
@@ -334,8 +370,14 @@ def editCategoryItem(category_id, item_id):
     """
     Edit a category item.
     """
-    editedItem = session.query(CategoryItem).filter_by(id=item_id).one()
-    category = session.query(Category).filter_by(id=category_id).one()
+    editedItem = session.query(
+        CategoryItem).filter_by(id=item_id).one_or_none()
+    category = session.query(
+        Category).filter_by(id=category_id).one_or_none()
+
+    if category is None or editedItem is None:
+        return abort(404)
+
     if login_session['user_id'] != category.user_id:
         return "<script>function myFunction() {alert('You are not authorized "
         "to edit items in this category. Please create your own category in "
@@ -362,8 +404,14 @@ def deleteCategoryItem(category_id, item_id):
     """
     Delete a category item.
     """
-    category = session.query(Category).filter_by(id=category_id).one()
-    itemToDelete = session.query(CategoryItem).filter_by(id=item_id).one()
+    category = session.query(
+        Category).filter_by(id=category_id).one_or_none()
+    itemToDelete = session.query(
+        CategoryItem).filter_by(id=item_id).one_or_none()
+
+    if category is None or itemToDelete is None:
+        return abort(404)
+
     if login_session['user_id'] != category.user_id:
         return "<script>function myFunction() {alert('You are not authorized "
         "to delete items from this category. Please create your own category "
@@ -383,7 +431,9 @@ def getUserID(email):
     Get user ID by email.
     """
     try:
-        user = session.query(User).filter_by(email=email).one()
+        user = session.query(User).filter_by(email=email).one_or_none()
+        if user is None:
+            return None
         return user.id
     except:
         return None
