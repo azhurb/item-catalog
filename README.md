@@ -13,11 +13,13 @@ Application is compatible with Python 2.7 and higher.
 ```
 pip install flask sqlalchemy oauth2client
 ```
+
 2. Download the application files
 ```
 git clone https://github.com/azhurb/item-catalog.git
 cd ./item-catalog
 ```
+
 3. Obtain JSON file with OAuth credentials in the [Google Cloud Platform Console](https://console.cloud.google.com/apis/credentials) and put it in the project folder with file name `client_secret.json`.
 
 4. Run the application
@@ -37,7 +39,7 @@ Get items of the specified category:
 ```
 curl -H "Accept: application/json" http://0.0.0.0:5000/catalog/2/
 ```
-Get item info
+Get item info:
 ```
 curl -H "Accept: application/json" http://0.0.0.0:5000/catalog/2/items/3/
 ```
